@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { clsx } from 'clsx'
+
 import '@/styles/globals.css'
-
+import '@/styles/prism-dracula.css'
+import '@/styles/prism-plus.css'
+import { serif } from '@/fonts/fonts'
 import Header from '@/components/header'
-import ThemeProvider from '@/components/theme-provider'
-
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: '文凯的菠萝格',
@@ -18,12 +18,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={inter.className}>
-      <body className="mx-auto max-w-2xl px-5 py-12">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <Header />
-          {children}
-        </ThemeProvider>
+    <html lang="en">
+      <body className={clsx(serif.className, 'mx-auto max-w-2xl px-5 py-12')}>
+        <Header />
+        {children}
       </body>
     </html>
   )

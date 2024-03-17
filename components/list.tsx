@@ -1,6 +1,9 @@
 import Link from 'next/link'
+import { format, parseISO } from 'date-fns'
 import { type Post } from 'contentlayer/generated'
+import { clsx } from 'clsx'
 
+import { sans } from '@/fonts/fonts'
 interface ListProps {
   posts: Post[]
 }
@@ -11,9 +14,9 @@ const List = ({ posts }: ListProps) => {
       {posts.map((post) => (
         <Link href={post.url} key={post._id} className="block scale-100 py-4 hover:scale-[1.005] active:scale-100">
           <article>
-            <h2>{post.title}</h2>
-            <p className="text-[13px] text-gray-700 dark:text-gray-300">{post.date}</p>
-            <p className="mt-1">{post.date}</p>
+            <h2 className={clsx(sans.className, 'text-link text-[28px] font-black')}>{post.title}</h2>
+            <p className="text-[13px]">{format(parseISO(post.date), 'LLLL d, yyyy')}</p>
+            <p className="mt-1">{post.description}</p>
           </article>
         </Link>
       ))}

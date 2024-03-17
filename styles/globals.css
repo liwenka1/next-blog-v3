@@ -2,28 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --text: #222;
-    --title: #222;
-    --background: white;
-    --code-bg: #232936;
-    --link: #d23669;
-    --inlineCode-bg: rgba(255, 229, 100, 0.2);
-    --inlineCode-text: #1a1a1a;
-    --pink: lab(63 59.32 -1.47);
-    --purple: lab(33 42.09 -43.19);
-  }
+:root {
+  --text: #222;
+  --title: #222;
+  --bg: white;
+  --code-bg: #232936;
+  --link: #d23669;
+  --pink: lab(63 59.32 -1.47);
+  --purple: lab(33 42.09 -43.19);
+}
 
-  .dark {
+@media (prefers-color-scheme: dark) {
+  :root {
     --text: rgba(255, 255, 255, 0.88);
     --title: white;
-    --background: rgb(40, 44, 53);
+    --bg: rgb(40, 44, 53);
     --code-bg: #191d27;
     --link: #ffa7c4;
-    --inlineCode-bg: rgba(115, 124, 153, 0.2);
-    --inlineCode-text: #e6e6e6;
     --pink: lab(81 32.36 -7.02);
     --purple: lab(78 19.97 -36.75);
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-bg text-text;
   }
 }
