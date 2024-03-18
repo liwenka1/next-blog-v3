@@ -6,6 +6,7 @@ import '@/styles/prism-dracula.css'
 import '@/styles/prism-plus.css'
 import { serif } from '@/fonts/fonts'
 import Header from '@/components/header'
+import ThemeProvider from '@/components/theme-provider'
 
 export const metadata: Metadata = {
   title: '文凯的菠萝格',
@@ -20,8 +21,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={clsx(serif.className, 'mx-auto max-w-2xl px-5 py-12')}>
-        <Header />
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          <Header />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )

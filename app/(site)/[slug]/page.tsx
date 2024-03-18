@@ -14,8 +14,8 @@ const PostDetail = ({ params }: PostDetail) => {
   const MDXContent = useMDXComponent(post.body.code)
 
   return (
-    <article>
-      <h1 className={clsx(sans.className, 'text-title text-[40px] font-black leading-[44px]')}>{post?.title}</h1>
+    <article className="prose dark:prose-invert">
+      <h1 className={clsx(sans.className, 'text-[40px] font-black leading-[44px] text-title')}>{post?.title}</h1>
       <p className="mb-6 mt-2 text-[13px]">{format(parseISO(post?.date), 'LLLL d, yyyy')}</p>
       <div className="mt-10">
         <MDXContent />
