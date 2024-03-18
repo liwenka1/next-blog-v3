@@ -1,4 +1,4 @@
-import HomeLink from '@/components/homeLink'
+import HomeLink from '@/components/home-link'
 import Link from 'next/link'
 import { type Post } from 'contentlayer/generated'
 
