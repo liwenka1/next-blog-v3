@@ -17,7 +17,7 @@ const Fotter = ({ post }: FotterProps) => {
         <span className="mx-2">·</span>
         <Link
           className="text-link underline underline-offset-8"
-          href={`https://github.com/liwenka1/next-blog-v3/blob/main/posts${post.url}`}
+          href={`https://github.com/liwenka1/next-blog-v3/blob/main/posts${post.url}/index.mdx`}
           target="_blank"
         >
           Edit on GitHub

@@ -1,6 +1,7 @@
 import { format, parseISO } from 'date-fns'
 import { allPosts, type Post } from 'contentlayer/generated'
 import { useMDXComponent } from 'next-contentlayer/hooks'
+import { notFound } from 'next/navigation'
 import { clsx } from 'clsx'
 
 import { sans } from '@/fonts/fonts'
@@ -11,6 +12,9 @@ interface PostDetail {
 
 const PostDetail = ({ params }: PostDetail) => {
   const post = allPosts.find((post) => post._raw.flattenedPath === params.slug) as Post
+
+	if (!post) notFound()
+
   const MDXContent = useMDXComponent(post.body.code)
 
   return (
