@@ -24,6 +24,40 @@ description: 通过一些例子来讲述 z-index 的一些规则以及进行简�
 
 默认的摆放规则，即不含有 z-index 属性时
 
+> 当没有元素包含 z-index 属性时，元素按照如下顺序堆叠（从底到顶顺序）：
+
+> 1. 根元素的背景和边界
+
+> 2. 普通流 (无定位) 里的块元素 (没有 position 或者 position:static;) 按 HTML 中的出现顺序堆叠
+
+> 3. 定位元素按 HTML 中的出现顺序堆叠
+
+> 在接下来的例子中，相对和绝对定位的块元素的大小和位置刚好说明上述堆叠规则。
+
+export const WithoutZIndex = () => {
+  return (
+    <div className="relative text-black">
+      <div className="absolute left-0 top-0 h-full w-40 border border-dotted border-black bg-red-300 opacity-70">
+        absolute:div1
+      </div>
+      <div className="relative left-[10%] top-20 h-20 w-4/5 border border-dotted border-black bg-orange-300 text-center opacity-70">
+        relative:div2
+      </div>
+      <div className="relative left-[10%] top-10 h-40 w-4/5 border border-dotted border-black bg-yellow-300 text-center opacity-70">
+        relative:div3
+      </div>
+      <div className="absolute right-0 top-0 h-full w-40 border border-dotted border-black bg-green-300 opacity-70">
+        absolute:div4
+      </div>
+      <div className="ml-[10%] h-20 w-4/5 border border-dotted border-black bg-teal-300 text-center">normal:div5</div>
+    </div>
+  )
+}
+
+<WithoutZIndex />
+
+堆叠顺序：4>3>2>1>5
+
 ## 层叠与浮动
 
 浮动元素的处理方式
