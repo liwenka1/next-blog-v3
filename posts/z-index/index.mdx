@@ -36,20 +36,22 @@ description: 通过一些例子来讲述 z-index 的一些规则以及进行简�
 
 export const WithoutZIndex = () => {
   return (
-    <div className="relative text-black">
-      <div className="absolute left-0 top-0 h-full w-40 border border-dotted border-black bg-red-300 opacity-70">
+    <div className="relative text-center text-black">
+      <div className="absolute left-0 top-0 h-full w-40 border border-dotted border-black bg-red-300">
         absolute:div1
       </div>
-      <div className="relative left-[10%] top-20 h-20 w-4/5 border border-dotted border-black bg-orange-300 text-center opacity-70">
+      <div className="relative left-[10%] top-20 h-20 w-4/5 border border-dotted border-black bg-orange-300">
         relative:div2
       </div>
-      <div className="relative left-[10%] top-10 h-40 w-4/5 border border-dotted border-black bg-yellow-300 text-center opacity-70">
+      <div className="relative left-[10%] top-10 h-40 w-4/5 border border-dotted border-black bg-yellow-300">
         relative:div3
       </div>
-      <div className="absolute right-0 top-0 h-full w-40 border border-dotted border-black bg-green-300 opacity-70">
+      <div className="absolute right-0 top-0 h-full w-40 border border-dotted border-black bg-green-300">
         absolute:div4
       </div>
-      <div className="ml-[10%] h-20 w-4/5 border border-dotted border-black bg-teal-300 text-center">normal:div5</div>
+      <div className="ml-[10%] flex h-20 w-4/5 items-end justify-center border border-dotted border-black bg-teal-300">
+        normal:div5
+      </div>
     </div>
   )
 }
@@ -61,6 +63,48 @@ export const WithoutZIndex = () => {
 ## 层叠与浮动
 
 浮动元素的处理方式
+
+> 对于浮动的块元素来说，层叠顺序变得有些不同。浮动块元素被放置于非定位块元素与定位块元素之间：
+
+> 1. 根元素的背景与边框
+
+> 2. 位于普通流中的后代块元素按照它们在 HTML 中出现的顺序层叠
+
+> 3. 浮动块元素
+
+> 4. 后代中的定位元素按照它们在 HTML 中出现的顺序层叠
+
+> 实际上，在接下来的例子中你会看到，非定位块元素 (div4) 的背景与边框丝毫不会受到浮动块元素的影响，但内容却恰恰相反。出现这种情况是由于 CSS 的标准浮动行为引起的。
+
+> 这种行为可以通过上一个例子的改进版本来解释：
+
+> 1. 根元素的背景与边框
+> 2. 位于普通流中的后代块元素按照它们在 HTML 中出现的顺序层叠
+> 3. 浮动块元素
+> 4. 常规流中的后代行内元素
+> 5. 后代中的定位元素按照它们在 HTML 中出现的顺序层叠
+
+> 备注： 在下面的例子中，除了非定位的那个块元素外，所有的块元素都是半透明的，以便来显示层叠顺序。如果减少非定位元素 (div4) 的透明度，会发生很诡异的事情：该元素的背景和边框会出现在浮动块元素上方，但是仍然处于定位元素的下方。我不能确定这是规范的 bug 或是怪异的解析。(设置透明度会隐式的创建一个层叠上下文。)
+
+export const StackingFloating = () => {
+  return (
+    <div className="relative flow-root text-center text-black">
+      <div className="w-30 absolute left-14 top-10 h-20 border border-dotted border-black bg-red-300">
+        absolute:div1
+      </div>
+      <div className="w-30 float-left ml-4 h-40 border border-dotted border-black bg-orange-300">float-left:div2</div>
+      <div className="w-30 float-right mr-4 h-40 border border-dotted border-black bg-yellow-300">float-right:div3</div>
+      <div className="mt-[5%] h-20 w-full border border-dotted border-black bg-teal-300">normal:div4</div>
+      <div className="w-30 absolute right-14 top-10 h-20 border border-dotted border-black bg-green-300">
+        absolute:div5
+      </div>
+    </div>
+  )
+}
+
+<StackingFloating />
+
+堆叠顺序：1、5>3、2>4
 
 ## 添加 z-index
 
