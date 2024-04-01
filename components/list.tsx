@@ -12,16 +12,16 @@ interface PostTitleProps {
 }
 
 const PostTitle = ({ post }: PostTitleProps) => {
-  let lightStart = new Color('lab(63 59.32 -1.47)')
-  let lightEnd = new Color('lab(33 42.09 -43.19)')
-  let lightRange = lightStart.range(lightEnd)
-  let darkStart = new Color('lab(81 32.36 -7.02)')
-  let darkEnd = new Color('lab(78 19.97 -36.75)')
-  let darkRange = darkStart.range(darkEnd)
-  let today = new Date()
-  let timeSinceFirstPost = (today.valueOf() - new Date('2024-03-18').valueOf()).valueOf()
-  let timeSinceThisPost = (today.valueOf() - new Date(post.date).valueOf()).valueOf()
-  let staleness = timeSinceThisPost / timeSinceFirstPost
+  const lightStart = new Color('lab(63 59.32 -1.47)')
+  const lightEnd = new Color('lab(33 42.09 -43.19)')
+  const lightRange = lightStart.range(lightEnd)
+  const darkStart = new Color('lab(81 32.36 -7.02)')
+  const darkEnd = new Color('lab(78 19.97 -36.75)')
+  const darkRange = darkStart.range(darkEnd)
+  const today = new Date()
+  const timeSinceFirstPost = (today.valueOf() - new Date('2024-03-18').valueOf()).valueOf()
+  const timeSinceThisPost = (today.valueOf() - new Date(post.date).valueOf()).valueOf()
+  const staleness = timeSinceThisPost / timeSinceFirstPost
 
   const titleStyles = {
     '--lightLink': lightRange(staleness).toString(),
