@@ -58,6 +58,30 @@ export const WithoutZIndex = () => {
 
 <WithoutZIndex />
 
+```ts
+export const WithoutZIndex = () => {
+  return (
+    <div className="relative text-center text-black">
+      <div className="absolute left-0 top-0 h-full w-40 border border-dotted border-black bg-red-300">
+        absolute:div1
+      </div>
+      <div className="relative left-[10%] top-20 h-20 w-4/5 border border-dotted border-black bg-orange-300">
+        relative:div2
+      </div>
+      <div className="relative left-[10%] top-10 h-40 w-4/5 border border-dotted border-black bg-yellow-300">
+        relative:div3
+      </div>
+      <div className="absolute right-0 top-0 h-full w-40 border border-dotted border-black bg-green-300">
+        absolute:div4
+      </div>
+      <div className="ml-[10%] flex h-20 w-4/5 items-end justify-center border border-dotted border-black bg-teal-300">
+        normal:div5
+      </div>
+    </div>
+  )
+}
+```
+
 堆叠顺序：4>3>2>1>5
 
 ## 层叠与浮动
@@ -104,6 +128,24 @@ export const StackingFloating = () => {
 
 <StackingFloating />
 
+```ts
+export const StackingFloating = () => {
+  return (
+    <div className="relative flow-root text-center text-black">
+      <div className="w-30 absolute left-14 top-10 h-20 border border-dotted border-black bg-red-300">
+        absolute:div1
+      </div>
+      <div className="w-30 float-left ml-4 h-40 border border-dotted border-black bg-orange-300">float-left:div2</div>
+      <div className="w-30 float-right mr-4 h-40 border border-dotted border-black bg-yellow-300">float-right:div3</div>
+      <div className="mt-[5%] h-20 w-full border border-dotted border-black bg-teal-300">normal:div4</div>
+      <div className="w-30 absolute right-14 top-10 h-20 border border-dotted border-black bg-green-300">
+        absolute:div5
+      </div>
+    </div>
+  )
+}
+```
+
 堆叠顺序：1、5>3、2>4
 
 ## 添加 z-index
@@ -144,6 +186,30 @@ export const AddingZIndex = () => {
 }
 
 <AddingZIndex />
+
+```ts
+export const AddingZIndex = () => {
+  return (
+    <div className="relative text-center text-black">
+      <div className="absolute left-0 top-0 z-40 h-full w-40 border border-dotted border-black bg-red-300">
+        absolute:div1 z-40
+      </div>
+      <div className="relative left-[10%] top-20 z-30 h-20 w-4/5 border border-dotted border-black bg-orange-300">
+        relative:div2 z-30
+      </div>
+      <div className="relative left-[10%] top-10 z-20 flex h-40 w-4/5 items-end justify-center border border-dotted border-black bg-yellow-300">
+        relative:div3 z-20
+      </div>
+      <div className="absolute right-0 top-0 z-10 h-full w-40 border border-dotted border-black bg-green-300">
+        absolute:div4 z-10
+      </div>
+      <div className="z-50 ml-[10%] flex h-20 w-4/5 items-end justify-center border border-dotted border-black bg-teal-300">
+        no positioning:div5 z-50
+      </div>
+    </div>
+  )
+}
+```
 
 堆叠顺序：1>2>3>4>5
 
@@ -208,16 +274,235 @@ export const StackingContext = () => {
 
 <StackingContext />
 
+```ts
+export const StackingContext = () => {
+  return (
+    <div className="relative text-left text-black">
+      <div className="relative top-0 z-40 mb-60 h-20 w-full border border-dotted border-black bg-red-300">
+        relative:div1 z-40
+      </div>
+      <div className="relative h-20 w-full border border-dotted border-black bg-orange-300">relative:div2 z-10</div>
+      <div className="absolute right-0 top-0 z-30 h-full w-3/5 border border-dotted border-black bg-yellow-300 pt-40">
+        <span>absolute:div3 z-30</span>
+        <div className="relative -right-5 -top-32 z-50 flex h-20 w-4/5 items-center border border-dotted border-black bg-green-300">
+          relative:div4 z-50
+        </div>
+        <div className="relative -right-5 z-0 h-20 w-4/5 border border-dotted border-black bg-teal-300">
+          relative:div5 z-0
+        </div>
+        <div className="w-30 absolute right-10 top-24 z-40 flex h-52 items-center justify-center border border-dotted border-black bg-blue-300">
+          absolute:div6 z-40
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
 堆叠顺序：1>4>6>5>3>2
 
-## 堆叠上下文示例1
+## 层叠上下文示例1
 
 在两层元素的第二层上使用 z-index
 
-## 堆叠上下文示例 2
+> 先看一个基础的例子。在根元素的层叠上下文中，有两个都是相对定位且没有设置 z-index 属性的 div（div1 和 div3）。在 div1 中有一个绝对定位的 div2，而在 div3 中有一个绝对定位的 div4，div2 和 div4 也都没有设置 z-index 属性。
+
+export const StackingContextOne = () => {
+  return (
+    <div className="relative mb-10 text-left text-black">
+      <div className="relative mb-10 h-20 border border-dotted border-black bg-red-300">
+        relative:div1
+        <div className="absolute left-40 z-10 h-40 border border-dotted border-black bg-orange-300">
+          absolute:div2 z-10
+        </div>
+      </div>
+      <div className="relative h-20 border border-dotted border-black bg-yellow-300">
+        relative:div3
+        <div className="absolute left-20 z-20 h-20 border border-dotted border-black bg-green-300">
+          absolute:div4 z-20
+        </div>
+      </div>
+    </div>
+  )
+}
+
+<StackingContextOne />
+
+```ts
+export const StackingContextOne = () => {
+  return (
+    <div className="relative mb-10 text-left text-black">
+      <div className="relative mb-10 h-20 border border-dotted border-black bg-red-300">
+        relative:div1
+        <div className="absolute left-40 z-10 h-40 border border-dotted border-black bg-orange-300">
+          absolute:div2 z-10
+        </div>
+      </div>
+      <div className="relative h-20 border border-dotted border-black bg-yellow-300">
+        relative:div3
+        <div className="absolute left-20 z-20 h-20 border border-dotted border-black bg-green-300">
+          absolute:div4 z-20
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+## 层叠上下文示例 2
 
 在两层元素的所有层上使用 z-index
 
-## 堆叠上下文示例 3
+> 这是一个非常简单的例子，但它是理解层叠上下文这个概念的关键。还是和之前的例子中一样的四个 div，不过现在 z-index 属性被分配在两个水平的层次结构中。
+
+export const StackingContextTwo = () => {
+  return (
+    <div className="relative mb-10 text-left text-black">
+      <div className="relative mb-10 h-20 border border-dotted border-black bg-red-300">
+        relative:div1
+        <div className="absolute left-40 z-20 h-40 border border-dotted border-black bg-orange-300">
+          absolute:div2 z-20
+        </div>
+      </div>
+      <div className="relative z-10 h-20 border border-dotted border-black bg-yellow-300">
+        relative:div3 z-10
+        <div className="absolute left-20 z-30 flex h-20 items-end border border-dotted border-black bg-green-300">
+          absolute:div4 z-30
+        </div>
+      </div>
+    </div>
+  )
+}
+
+<StackingContextTwo />
+
+```ts
+export const StackingContextTwo = () => {
+  return (
+    <div className="relative mb-10 text-left text-black">
+      <div className="relative mb-10 h-20 border border-dotted border-black bg-red-300">
+        relative:div1
+        <div className="absolute left-40 z-20 h-40 border border-dotted border-black bg-orange-300">
+          absolute:div2 z-20
+        </div>
+      </div>
+      <div className="relative z-10 h-20 border border-dotted border-black bg-yellow-300">
+        relative:div3 z-10
+        <div className="absolute left-20 z-30 flex h-20 items-end border border-dotted border-black bg-green-300">
+          absolute:div4 z-30
+        </div>
+      </div>
+    </div>
+  )
+}
+```
+
+## 层叠上下文示例 3
 
 在三层元素的第二层上使用 z-index
+
+> 最后一个例子展示了，在多层级的 HTML 结构中混合了多个定位元素且使用类选择器设置 z-index 属性时出现的问题。
+
+> 我们来看一个用多个定位的 div 实现的三级菜单的例子，二级菜单和三级菜单在鼠标悬停或点击其父元素时才出现，通常这样的菜单在客户端和服务端都是由脚本生成的，所以样式规则不是通过 ID 选择器设置而是通过类选择器设置。
+
+> 如果这个三级菜单有部分区域重叠，管理层叠顺序就会成为一个问题。
+
+> 一级菜单仅仅是相对定位，所以没有创建层叠上下文。
+
+> 二级菜单相对其父元素（一级菜单）绝对定位，要使二级菜单在所有一级菜单的上方，则需要使用 z-index。此时每个二级菜单都创建了一个层叠上下文，而三级菜单也处于其父元素（二级菜单）创建的上下文中。
+
+> 这样一来，在 HTML 结构中处于三级菜单后面的二级菜单，则会显示在三级菜单的上方，因为所有的二级菜单都使用了同样的 z-index 值，所以处于同一个层叠上下文中。
+
+export const Level1 = ({ children }) => {
+  return (
+    <div className="relative h-32 w-full border border-dotted border-black bg-red-300">relative:Level1{children}</div>
+  )
+}
+
+export const Level2 = ({ children }) => {
+  return (
+    <div className="relative left-10 z-10 h-20 w-4/5 border border-dotted border-black bg-orange-300">
+      relative:Level2 z-10{children}
+    </div>
+  )
+}
+
+export const Level3 = () => {
+  return (
+    <div className="relative left-20 h-10 w-1/2 border border-dotted border-black bg-yellow-300">relative:Level3</div>
+  )
+}
+
+export const StackingContextThree = () => {
+  return (
+    <div className="relative text-left text-black">
+      <Level1>
+        <Level2>
+          <Level3 />
+          <Level3 />
+          <Level3 />
+          <Level3 />
+          <Level3 />
+          <Level3 />
+          <Level3 />
+          <Level3 />
+          <Level3 />
+          <Level3 />
+        </Level2>
+        <Level2 />
+      </Level1>
+      <Level1 />
+      <Level1 />
+      <Level1 />
+    </div>
+  )
+}
+
+<StackingContextThree />
+
+```ts
+export const Level1 = ({ children }) => {
+  return (
+    <div className="relative h-32 w-full border border-dotted border-black bg-red-300">relative:Level1{children}</div>
+  )
+}
+
+export const Level2 = ({ children }) => {
+  return (
+    <div className="relative left-10 z-10 h-20 w-4/5 border border-dotted border-black bg-orange-300">
+      relative:Level2 z-10{children}
+    </div>
+  )
+}
+
+export const Level3 = () => {
+  return (
+    <div className="relative left-20 h-10 w-1/2 border border-dotted border-black bg-yellow-300">relative:Level3</div>
+  )
+}
+
+export const StackingContextThree = () => {
+  return (
+    <div className="relative text-left text-black">
+      <Level1>
+        <Level2>
+          <Level3 />
+          <Level3 />
+          <Level3 />
+          <Level3 />
+          <Level3 />
+          <Level3 />
+          <Level3 />
+          <Level3 />
+          <Level3 />
+          <Level3 />
+        </Level2>
+        <Level2 />
+      </Level1>
+      <Level1 />
+      <Level1 />
+      <Level1 />
+    </div>
+  )
+}
+```
