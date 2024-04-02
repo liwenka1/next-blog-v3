@@ -1,3 +1,6 @@
+'use client'
+
+import * as React from 'react'
 import { format, parseISO } from 'date-fns'
 import { allPosts, type Post } from 'contentlayer/generated'
 import { useMDXComponent } from 'next-contentlayer/hooks'
@@ -13,7 +16,7 @@ interface PostDetail {
 const PostDetail = ({ params }: PostDetail) => {
   const post = allPosts.find((post) => post._raw.flattenedPath === params.slug) as Post
 
-	if (!post) notFound()
+  if (!post) notFound()
 
   const MDXContent = useMDXComponent(post.body.code)
 

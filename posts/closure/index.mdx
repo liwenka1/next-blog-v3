@@ -3,3 +3,163 @@ title: 闭包（closure）
 date: 2024-04-01
 description: 闭包（closure）是一个函数以及其捆绑的周边环境状态（lexical environment，词法环境）的引用的组合。换而言之，闭包让开发者可以从内部函数访问外部函数的作用域。在 JavaScript 中，闭包会随着函数的创建而被同时创建。
 ---
+
+# 前言
+
+在 MDN 中对于闭包的描述：
+
+> 闭包（closure）是一个函数以及其捆绑的周边环境状态（lexical environment，词法环境）的引用的组合。换而言之，闭包让开发者可以从内部函数访问外部函数的作用域。在 JavaScript 中，闭包会随着函数的创建而被同时创建。
+
+## 词法作用域
+
+请看下面的例子：
+
+export const InitComp = () => {
+  const init = () => {
+    const name = 'liwenkai'
+    const displayName = () => {
+      alert(name)
+    }
+    displayName()
+  }
+  return (
+    <button className="rounded bg-blue-500 p-2" onClick={init}>
+      点我
+    </button>
+  )
+}
+
+```ts
+export const InitComp = () => {
+  const init = () => {
+    const name = 'liwenkai'
+    const displayName = () => {
+      alert(name)
+    }
+    displayName()
+  }
+  return (
+    <button className="rounded bg-blue-500 p-2" onClick={init}>
+      点我
+    </button>
+  )
+}
+```
+
+<InitComp />
+
+## 闭包
+
+现在来看这个例子：
+
+export const MakeFuncComp = () => {
+  const makeFunc = () => {
+    const name = 'liwenkai'
+    const displayName = () => {
+      alert(name)
+    }
+    return displayName
+  }
+  const myFunc = makeFunc()
+  return (
+    <button className="rounded bg-blue-500 p-2" onClick={myFunc}>
+      点我
+    </button>
+  )
+}
+
+```ts
+export const MakeFuncComp = () => {
+  const makeFunc = () => {
+    const name = 'liwenkai'
+    const displayName = () => {
+      alert(name)
+    }
+    return displayName
+  }
+  const myFunc = makeFunc()
+  return (
+    <button className="rounded bg-blue-500 p-2" onClick={myFunc}>
+      点我
+    </button>
+  )
+}
+```
+
+<MakeFuncComp />
+
+下面是一个更有意思的示例 — 一个 makeAdder 函数：
+
+export const MakeAdderComp = () => {
+  const makeAdder = (x) => {
+    return function (y) {
+      return x + y
+    }
+  }
+  const add5 = makeAdder(5)
+  const add10 = makeAdder(10)
+  const [number, setNumber] = React.useState(0)
+  return (
+    <div className="flex gap-4">
+      <button className="rounded bg-blue-500 p-2" onClick={() => setNumber(add5(number))}>
+        点我+5
+      </button>
+      <button className="rounded bg-blue-500 p-2" onClick={() => setNumber(add10(number))}>
+        点我+10
+      </button>
+      <button className="rounded bg-blue-500 p-2" onClick={() => setNumber(0)}>
+        重置为0
+      </button>
+      <span className="w-20 rounded bg-blue-500 p-2">{number}</span>
+    </div>
+  )
+}
+
+```ts
+export const MakeAdderComp = () => {
+  const makeAdder = (x) => {
+    return function (y) {
+      return x + y
+    }
+  }
+  const add5 = makeAdder(5)
+  const add10 = makeAdder(10)
+  const [number, setNumber] = React.useState(0)
+  return (
+    <div className="flex gap-4">
+      <button className="rounded bg-blue-500 p-2" onClick={() => setNumber(add5(number))}>
+        点我+5
+      </button>
+      <button className="rounded bg-blue-500 p-2" onClick={() => setNumber(add10(number))}>
+        点我+10
+      </button>
+      <button className="rounded bg-blue-500 p-2" onClick={() => setNumber(0)}>
+        重置为0
+      </button>
+      <span className="w-20 rounded bg-blue-500 p-2">{number}</span>
+    </div>
+  )
+}
+```
+
+<MakeAdderComp />
+
+## 实用的闭包
+
+> 闭包很有用，因为它允许将函数与其所操作的某些数据（环境）关联起来。这显然类似于面向对象编程。在面向对象编程中，对象允许我们将某些数据（对象的属性）与一个或者多个方法相关联。
+
+> 因此，通常你使用只有一个方法的对象的地方，都可以使用闭包。
+
+> 在 Web 中，你想要这样做的情况特别常见。大部分我们所写的 JavaScript 代码都是基于事件的 — 定义某种行为，然后将其添加到用户触发的事件之上（比如点击或者按键）。我们的代码通常作为回调：为响应事件而执行的函数。
+
+接着看下面一个利用闭包来改变字号的例子：
+
+export const MakeSizerComp = () => {
+  const makesize = (size) => {
+	return function(){
+		return 
+	}
+  }
+}
+
+<MakeSizerComp />
