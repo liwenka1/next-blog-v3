@@ -156,10 +156,102 @@ export const MakeAdderComp = () => {
 
 export const MakeSizerComp = () => {
   const makesize = (size) => {
-	return function(){
-		return 
-	}
+    return function () {
+      return 'text-' + size
+    }
   }
+  const [spanClass, setSpanClass] = React.useState('text-base')
+  return (
+    <>
+      <div className="flex h-20 items-center">
+        <span className={spanClass}>Some paragraph text</span>
+      </div>
+      <div className="flex gap-4">
+        <button className="rounded bg-blue-500 p-2" onClick={() => setSpanClass(makesize('sm'))}>
+          点我 sm
+        </button>
+        <button className="rounded bg-blue-500 p-2" onClick={() => setSpanClass(makesize('base'))}>
+          点我 base
+        </button>
+        <button className="rounded bg-blue-500 p-2" onClick={() => setSpanClass(makesize('2xl'))}>
+          点我 2xl
+        </button>
+      </div>
+    </>
+  )
 }
 
+```ts
+export const MakeSizerComp = () => {
+  const makesize = (size) => {
+    return function () {
+      return 'text-' + size
+    }
+  }
+  const [spanClass, setSpanClass] = React.useState('text-base')
+  return (
+    <>
+      <div className="flex h-20 items-center">
+        <span className={spanClass}>Some paragraph text</span>
+      </div>
+      <div className="flex gap-4">
+        <button className="rounded bg-blue-500 p-2" onClick={() => setSpanClass(makesize('sm'))}>
+          点我 sm
+        </button>
+        <button className="rounded bg-blue-500 p-2" onClick={() => setSpanClass(makesize('base'))}>
+          点我 base
+        </button>
+        <button className="rounded bg-blue-500 p-2" onClick={() => setSpanClass(makesize('2xl'))}>
+          点我 2xl
+        </button>
+      </div>
+    </>
+  )
+}
+```
+
 <MakeSizerComp />
+
+## 用闭包模拟私有方法
+
+> 编程语言中，比如 Java，是支持将方法声明为私有的，即它们只能被同一个类中的其他方法所调用。
+
+> 而 JavaScript 没有这种原生支持，但我们可以使用闭包来模拟私有方法。私有方法不仅仅有利于限制对代码的访问：还提供了管理全局命名空间的强大能力，避免非核心的方法弄乱了代码的公共接口部分。
+
+export const CounterComp = () => {
+  const Counter = () => {
+    let privateCounter = 0
+    const changeBy = (val) => {
+      privateCounter += val
+    }
+    return {
+      increment: () => changeBy(1),
+      decrement: () => changeBy(-1),
+      value: () => {
+        return privateCounter
+      }
+    }
+  }
+  const [count, setCount] = React.useState(0)
+  return (
+    <>
+      <div className="flex h-20 items-center">
+        <span>{count}</span>
+        <button onClick={() => setCount(2)}>点我</button>
+      </div>
+      <div className="flex gap-4">
+        <button className="rounded bg-blue-500 p-2" onClick={() => Counter().increment()}>
+          点我+1
+        </button>
+        <button className="rounded bg-blue-500 p-2" onClick={() => Counter().decrement()}>
+          点我-1
+        </button>
+        <button className="rounded bg-blue-500 p-2" onClick={() => setCount(Counter().value())}>
+          点我更新数据
+        </button>
+      </div>
+    </>
+  )
+}
+
+<CounterComp />
