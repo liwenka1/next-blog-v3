@@ -48,6 +48,8 @@ export const InitComp = () => {
 
 <InitComp />
 
+> init() 创建了一个局部变量 name 和一个名为 displayName() 的函数。displayName() 是定义在 init() 里的内部函数，并且仅在 init() 函数体内可用。请注意，displayName() 没有自己的局部变量。然而，因为它可以访问到外部函数的变量，所以 displayName() 可以使用父函数 init() 中声明的变量 name 。
+
 ## 闭包
 
 现在来看这个例子：
@@ -87,6 +89,12 @@ export const MakeFuncComp = () => {
 ```
 
 <MakeFuncComp />
+
+> 运行这段代码的效果和之前 init() 函数的示例完全一样。其中不同的地方（也是有意思的地方）在于内部函数 displayName() 在执行前，从外部函数返回。
+
+> 第一眼看上去，也许不能直观地看出这段代码能够正常运行。在一些编程语言中，一个函数中的局部变量仅存在于此函数的执行期间。一旦 makeFunc() 执行完毕，你可能会认为 name 变量将不能再被访问。然而，因为代码仍按预期运行，所以在 JavaScript 中情况显然与此不同。
+
+> 原因在于，JavaScript 中的函数会形成了闭包。 闭包是由函数以及声明该函数的词法环境组合而成的。该环境包含了这个闭包创建时作用域内的任何局部变量。在本例子中，myFunc 是执行 makeFunc 时创建的 displayName 函数实例的引用。displayName 的实例维持了一个对它的词法环境（变量 name 存在于其中）的引用。因此，当 myFunc 被调用时，变量 name 仍然可用，其值 Mozilla 就被传递到alert中。
 
 下面是一个更有意思的示例 — 一个 makeAdder 函数：
 
@@ -227,31 +235,111 @@ export const CounterComp = () => {
     return {
       increment: () => changeBy(1),
       decrement: () => changeBy(-1),
+      reset: () => {
+        privateCounter = 0
+      },
       value: () => {
         return privateCounter
       }
     }
   }
-  const [count, setCount] = React.useState(0)
+  const myCounter = React.useMemo(() => Counter(), [])
+  const [count, setCount] = React.useState(myCounter.value())
   return (
     <>
       <div className="flex h-20 items-center">
-        <span>{count}</span>
-        <button onClick={() => setCount(2)}>点我</button>
+        <span className="w-20 rounded bg-blue-500 p-2">{count}</span>
       </div>
       <div className="flex gap-4">
-        <button className="rounded bg-blue-500 p-2" onClick={() => Counter().increment()}>
+        <button
+          className="rounded bg-blue-500 p-2"
+          onClick={() => {
+            myCounter.increment()
+            setCount(myCounter.value())
+          }}
+        >
           点我+1
         </button>
-        <button className="rounded bg-blue-500 p-2" onClick={() => Counter().decrement()}>
+        <button
+          className="rounded bg-blue-500 p-2"
+          onClick={() => {
+            myCounter.decrement()
+            setCount(myCounter.value())
+          }}
+        >
           点我-1
         </button>
-        <button className="rounded bg-blue-500 p-2" onClick={() => setCount(Counter().value())}>
-          点我更新数据
+        <button
+          className="rounded bg-blue-500 p-2"
+          onClick={() => {
+            myCounter.reset()
+            setCount(myCounter.value())
+          }}
+        >
+          重置为0
         </button>
       </div>
     </>
   )
 }
+
+```ts
+export const CounterComp = () => {
+  const Counter = () => {
+    let privateCounter = 0
+    const changeBy = (val) => {
+      privateCounter += val
+    }
+    return {
+      increment: () => changeBy(1),
+      decrement: () => changeBy(-1),
+      reset: () => {
+        privateCounter = 0
+      },
+      value: () => {
+        return privateCounter
+      }
+    }
+  }
+  const myCounter = React.useMemo(() => Counter(), [])
+  const [count, setCount] = React.useState(myCounter.value())
+  return (
+    <>
+      <div className="flex h-20 items-center">
+        <span className="w-20 rounded bg-blue-500 p-2">{count}</span>
+      </div>
+      <div className="flex gap-4">
+        <button
+          className="rounded bg-blue-500 p-2"
+          onClick={() => {
+            myCounter.increment()
+            setCount(myCounter.value())
+          }}
+        >
+          点我+1
+        </button>
+        <button
+          className="rounded bg-blue-500 p-2"
+          onClick={() => {
+            myCounter.decrement()
+            setCount(myCounter.value())
+          }}
+        >
+          点我-1
+        </button>
+        <button
+          className="rounded bg-blue-500 p-2"
+          onClick={() => {
+            myCounter.reset()
+            setCount(myCounter.value())
+          }}
+        >
+          重置为0
+        </button>
+      </div>
+    </>
+  )
+}
+```
 
 <CounterComp />
