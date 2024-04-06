@@ -30,7 +30,6 @@ export const DefinePropertyComp = () => {
         set(val) {
           if (val !== v) {
             v = val
-            console.log(k)
             if (k === 'name') spanNameRef.current.innerHTML = val
             else if (k === 'iphone') spanIponeRef.current.innerHTML = val
             else if (k === 'age') spanAgeRef.current.innerHTML = val
