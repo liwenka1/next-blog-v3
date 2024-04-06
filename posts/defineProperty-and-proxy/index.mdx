@@ -1,18 +1,106 @@
 ---
-title: Vue的双向绑定原理之 Object.defineProperty() 以及 proxy
+title: Vue的双向绑定原理之 Object.defineProperty 以及 proxy
 date: 2024-04-04
-description:
+description: Object.defineProperty 以及 proxy 实现原理
 ---
 
 ## Object.defineProperty()
 
 export const DefinePropertyComp = () => {
   const obj = {
-    name: 'liwenkai'
+    name: 'liwenkai',
+    info: {
+      iphone: 12138,
+      age: 18
+    }
   }
+  const isObject = (v) => {
+    return typeof v === 'object' && v !== null
+  }
+  const observe = (obj) => {
+    for (const k in obj) {
+      let v = obj[k]
+      if (isObject(v)) {
+        observe(v)
+      }
+      Object.defineProperty(obj, k, {
+        get() {
+          return v
+        },
+        set(val) {
+          if (val !== v) {
+            v = val
+            console.log(k)
+            if (k === 'name') spanNameRef.current.innerHTML = val
+            else if (k === 'iphone') spanIponeRef.current.innerHTML = val
+            else if (k === 'age') spanAgeRef.current.innerHTML = val
+          }
+        }
+      })
+    }
+  }
+  const [inputName, setInputName] = React.useState('')
+  const inputNameClick = () => {
+    observe(obj)
+    obj.name = inputName
+  }
+  const [inputIphone, setInputIphone] = React.useState('')
+  const inputIphoneClick = () => {
+    observe(obj)
+    obj.info.iphone = inputIphone
+  }
+  const [inputAge, setInputAge] = React.useState('')
+  const inputAgeClick = () => {
+    observe(obj)
+    obj.info.age = inputAge
+  }
+  const spanNameRef = React.useRef(null)
+  const spanIponeRef = React.useRef(null)
+  const spanAgeRef = React.useRef(null)
   return (
     <div className="flex flex-col">
-      <span className="w-full rounded bg-blue-500 p-2">{obj.name}</span>
+      <span className="w-full rounded bg-blue-500 p-2" ref={spanNameRef}>
+        {obj.name}
+      </span>
+      <span className="w-full rounded bg-blue-500 p-2" ref={spanIponeRef}>
+        {obj.info.iphone}
+      </span>
+      <span className="w-full rounded bg-blue-500 p-2" ref={spanAgeRef}>
+        {obj.info.age}
+      </span>
+      <div className="flex">
+        <input
+          className="flex-1 rounded border bg-blue-500 p-2"
+          placeholder="输入名字"
+          value={inputName}
+          onChange={(e) => setInputName(e.target.value)}
+        />
+        <button className="rounded bg-blue-500 p-2" onClick={inputNameClick}>
+          点我修改名字
+        </button>
+      </div>
+      <div className="flex">
+        <input
+          className="flex-1 rounded border bg-blue-500 p-2"
+          placeholder="输入电话"
+          value={inputIphone}
+          onChange={(e) => setInputIphone(e.target.value)}
+        />
+        <button className="rounded bg-blue-500 p-2" onClick={inputIphoneClick}>
+          点我修改电话
+        </button>
+      </div>
+      <div className="flex">
+        <input
+          className="flex-1 rounded border bg-blue-500 p-2"
+          placeholder="输入年龄"
+          value={inputAge}
+          onChange={(e) => setInputAge(e.target.value)}
+        />
+        <button className="rounded bg-blue-500 p-2" onClick={inputAgeClick}>
+          点我修改年龄
+        </button>
+      </div>
     </div>
   )
 }
