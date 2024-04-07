@@ -130,7 +130,7 @@ export const VueComp = () => {
         enumerable: true,
         configurable: true,
         get() {
-          dependency.temp && dependency.addSub(dependency.temp)
+          Dependency.temp && dependency.addSub(Dependency.temp)
           return value
         },
         set(newValue) {
@@ -169,7 +169,6 @@ export const VueComp = () => {
       }
       if (node.nodeType === 1 && node.nodeName === 'INPUT') {
         const attr = Array.from(node.attributes)
-        console.log(attr)
         attr.forEach((i) => {
           if (i.nodeName === 'v-model') {
             const value = i.nodeValue.split('.').reduce((total, current) => total[current], vm.$data)
@@ -221,7 +220,7 @@ export const VueComp = () => {
     }
   }
   React.useEffect(() => {
-    const vm = new Vue({
+    new Vue({
       el: '#app',
       data: {
         name: 'liwenkai',
