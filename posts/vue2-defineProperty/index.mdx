@@ -1,14 +1,14 @@
 ---
-title: Vue2的双向绑定原理
+title: Vue2响应式原理
 date: 2024-04-04
-description: Object.defineProperty
+description: 深入了解响应式原理，并且数据劫持 + 发布者订阅者模式来实现一个简单的 Vue 类
 ---
 
 ## 利用 Object.defineProperty 实现数据劫持
 
 首先利用 Object.defineProperty 来实现一个简单的数据劫持案例
 
-在下面的例子中，我们通过 Object.defineProperty 来改写 get 和 set 实现数据劫持，并且在 set 中去手动更新页面数据实现简单的双向绑定
+在下面的例子中，我们通过数据劫持来实现类似于 Vue 的双向绑定
 
 export const DefinePropertyComp = () => {
   const obj = {
@@ -41,20 +41,21 @@ export const DefinePropertyComp = () => {
       })
     }
   }
-  const [inputName, setInputName] = React.useState('')
-  const inputNameClick = () => {
+  const [inputName, setInputName] = React.useState(obj.name)
+  const [inputIphone, setInputIphone] = React.useState(obj.info.iphone)
+  const [inputAge, setInputAge] = React.useState(obj.info.age)
+  const inputChange = (v, k) => {
     observe(obj)
-    obj.name = inputName
-  }
-  const [inputIphone, setInputIphone] = React.useState('')
-  const inputIphoneClick = () => {
-    observe(obj)
-    obj.info.iphone = inputIphone
-  }
-  const [inputAge, setInputAge] = React.useState('')
-  const inputAgeClick = () => {
-    observe(obj)
-    obj.info.age = inputAge
+    if (k === 'name') {
+      setInputName(v)
+      obj.name = v
+    } else if (k === 'iphone') {
+      setInputIphone(v)
+      obj.info.iphone = v
+    } else if (k === 'age') {
+      setInputAge(v)
+      obj.info.age = v
+    }
   }
   const spanNameRef = React.useRef(null)
   const spanIponeRef = React.useRef(null)
@@ -64,45 +65,30 @@ export const DefinePropertyComp = () => {
       <span className="w-full rounded bg-blue-500 p-2" ref={spanNameRef}>
         {obj.name}
       </span>
+      <input
+        className="flex-1 rounded border bg-blue-500 p-2"
+        placeholder="输入名字"
+        value={inputName}
+        onChange={(e) => inputChange(e.target.value, 'name')}
+      />
       <span className="w-full rounded bg-blue-500 p-2" ref={spanIponeRef}>
         {obj.info.iphone}
       </span>
+      <input
+        className="flex-1 rounded border bg-blue-500 p-2"
+        placeholder="输入电话"
+        value={inputIphone}
+        onChange={(e) => inputChange(e.target.value, 'iphone')}
+      />
       <span className="w-full rounded bg-blue-500 p-2" ref={spanAgeRef}>
         {obj.info.age}
       </span>
-      <div className="flex">
-        <input
-          className="flex-1 rounded border bg-blue-500 p-2"
-          placeholder="输入名字"
-          value={inputName}
-          onChange={(e) => setInputName(e.target.value)}
-        />
-        <button className="rounded bg-blue-500 p-2" onClick={inputNameClick}>
-          点我修改名字
-        </button>
-      </div>
-      <div className="flex">
-        <input
-          className="flex-1 rounded border bg-blue-500 p-2"
-          placeholder="输入电话"
-          value={inputIphone}
-          onChange={(e) => setInputIphone(e.target.value)}
-        />
-        <button className="rounded bg-blue-500 p-2" onClick={inputIphoneClick}>
-          点我修改电话
-        </button>
-      </div>
-      <div className="flex">
-        <input
-          className="flex-1 rounded border bg-blue-500 p-2"
-          placeholder="输入年龄"
-          value={inputAge}
-          onChange={(e) => setInputAge(e.target.value)}
-        />
-        <button className="rounded bg-blue-500 p-2" onClick={inputAgeClick}>
-          点我修改年龄
-        </button>
-      </div>
+      <input
+        className="flex-1 rounded border bg-blue-500 p-2"
+        placeholder="输入年龄"
+        value={inputAge}
+        onChange={(e) => inputChange(e.target.value, 'age')}
+      />
     </div>
   )
 }
@@ -110,6 +96,8 @@ export const DefinePropertyComp = () => {
 <DefinePropertyComp />
 
 ## 实现 Vue 类
+
+通过**数据劫持 + 发布者订阅者模式**实现 Vue 类
 
 export const VueComp = () => {
   class Vue {
@@ -134,6 +122,7 @@ export const VueComp = () => {
           return value
         },
         set(newValue) {
+          if (value === newValue) return
           value = newValue
           Observer(newValue)
           dependency.notify()
