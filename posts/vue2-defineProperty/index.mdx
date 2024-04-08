@@ -18,11 +18,8 @@ export const DefinePropertyComp = () => {
       age: 18
     }
   }
-  const isObject = (v) => {
-    return typeof v === 'object' && v !== null
-  }
   const observe = (obj) => {
-    if (!isObject(obj)) return
+    if (!obj || typeof obj !== 'object') return
     for (const k in obj) {
       let v = obj[k]
       observe(v)
@@ -111,7 +108,7 @@ export const VueComp = () => {
   function Observer(data_instance) {
     if (!data_instance || typeof data_instance !== 'object') return
     const dependency = new Dependency()
-    Object.keys(data_instance).forEach((key) => {
+    for (const key in data_instance) {
       let value = data_instance[key]
       Observer(value)
       Object.defineProperty(data_instance, key, {
@@ -128,7 +125,7 @@ export const VueComp = () => {
           dependency.notify()
         }
       })
-    })
+    }
   }
   // HTML模板解析
   function Compile(element, vm) {
