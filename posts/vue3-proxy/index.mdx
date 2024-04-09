@@ -3,3 +3,66 @@ title: Vue3响应式原理
 date: 2024-04-08
 description: 深入了解响应式原理，并且数据劫持 + 发布者订阅者模式来实现一个简单的 Vue 类
 ---
+
+## proxy
+
+export const ProxyComp = () => {
+  const obj = {
+    name: 'liwenkai',
+    info: {
+      iphone: 12138,
+      age: 18
+    }
+  }
+  const obj_proxy = new Proxy(obj, {
+    get(target, key) {
+      console.log(target, key)
+      return target[key]
+    },
+    set(target, key, value) {
+      console.log(target, key, value)
+    }
+  })
+  const [inputName, setInputName] = React.useState(obj_proxy.name)
+  const [inputIphone, setInputIphone] = React.useState(obj_proxy.info.iphone)
+  const [inputAge, setInputAge] = React.useState(obj_proxy.info.age)
+  const inputChange = (v, k) => {
+    if (k === 'name') {
+      setInputName(v)
+      obj_proxy.name = v
+    } else if (k === 'iphone') {
+      setInputIphone(v)
+      obj_proxy.info.iphone = v
+    } else if (k === 'age') {
+      setInputAge(v)
+      obj_proxy.info.age = v
+    }
+  }
+  return (
+    <div className="flex flex-col">
+      <span className="w-full rounded bg-blue-500 p-2">{obj_proxy.name}</span>
+      <input
+        className="flex-1 rounded border bg-blue-500 p-2"
+        placeholder="输入名字"
+        value={inputName}
+        onChange={(e) => inputChange(e.target.value, 'name')}
+      />
+      <span className="w-full rounded bg-blue-500 p-2">{obj_proxy.info.iphone}</span>
+      <input
+        className="flex-1 rounded border bg-blue-500 p-2"
+        placeholder="输入电话"
+        value={inputIphone}
+        onChange={(e) => inputChange(e.target.value, 'iphone')}
+      />
+      <span className="w-full rounded bg-blue-500 p-2">{obj_proxy.info.age}</span>
+      <input
+        className="flex-1 rounded border bg-blue-500 p-2"
+        placeholder="输入年龄"
+        value={inputAge}
+        onChange={(e) => inputChange(e.target.value, 'age')}
+      />
+    </div>
+  )
+}
+
+<ProxyComp />
