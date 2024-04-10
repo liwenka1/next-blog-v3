@@ -21,6 +21,12 @@ export const ProxyComp = () => {
     },
     set(target, key, value) {
       console.log(target, key, value)
+      if (target[key] !== value) {
+        Reflect.set(target, key, value)
+        if (key === 'name') spanNameRef.current.innerHTML = value
+        else if (key === 'iphone') spanIponeRef.current.innerHTML = value
+        else if (key === 'age') spanAgeRef.current.innerHTML = value
+      }
     }
   })
   const [inputName, setInputName] = React.useState(obj_proxy.name)
@@ -38,23 +44,32 @@ export const ProxyComp = () => {
       obj_proxy.info.age = v
     }
   }
+  const spanNameRef = React.useRef(null)
+  const spanIponeRef = React.useRef(null)
+  const spanAgeRef = React.useRef(null)
   return (
     <div className="flex flex-col">
-      <span className="w-full rounded bg-blue-500 p-2">{obj_proxy.name}</span>
+      <span className="w-full rounded bg-blue-500 p-2" ref={spanNameRef}>
+        {obj_proxy.name}
+      </span>
       <input
         className="flex-1 rounded border bg-blue-500 p-2"
         placeholder="输入名字"
         value={inputName}
         onChange={(e) => inputChange(e.target.value, 'name')}
       />
-      <span className="w-full rounded bg-blue-500 p-2">{obj_proxy.info.iphone}</span>
+      <span className="w-full rounded bg-blue-500 p-2" ref={spanIponeRef}>
+        {obj_proxy.info.iphone}
+      </span>
       <input
         className="flex-1 rounded border bg-blue-500 p-2"
         placeholder="输入电话"
         value={inputIphone}
         onChange={(e) => inputChange(e.target.value, 'iphone')}
       />
-      <span className="w-full rounded bg-blue-500 p-2">{obj_proxy.info.age}</span>
+      <span className="w-full rounded bg-blue-500 p-2" ref={spanAgeRef}>
+        {obj_proxy.info.age}
+      </span>
       <input
         className="flex-1 rounded border bg-blue-500 p-2"
         placeholder="输入年龄"
