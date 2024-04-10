@@ -6,6 +6,10 @@ description: 深入了解响应式原理，并且数据劫持 + 发布者订阅�
 
 ## proxy
 
+首先利用 proxy 来实现一个简单的数据劫持案例
+
+在下面的例子中，我们通过数据劫持来实现类似于 Vue 的双向绑定
+
 export const ProxyComp = () => {
   const obj = {
     name: 'liwenkai',
@@ -14,34 +18,44 @@ export const ProxyComp = () => {
       age: 18
     }
   }
-  const obj_proxy = new Proxy(obj, {
-    get(target, key) {
-      console.log(target, key)
-      return target[key]
-    },
-    set(target, key, value) {
-      console.log(target, key, value)
-      if (target[key] !== value) {
-        Reflect.set(target, key, value)
-        if (key === 'name') spanNameRef.current.innerHTML = value
-        else if (key === 'iphone') spanIponeRef.current.innerHTML = value
-        else if (key === 'age') spanAgeRef.current.innerHTML = value
+  const observe = (obj) => {
+    if (!obj || typeof obj !== 'object') return
+    return new Proxy(obj, {
+      get(target, key) {
+        const value = target[key]
+        if (typeof value === 'object' && value !== null) {
+          return observe(value)
+        }
+        return value
+      },
+      set(target, key, value) {
+        const oldValue = target[key]
+        if (oldValue !== value) {
+          Reflect.set(target, key, value)
+          if (typeof value === 'object' && value !== null) {
+            observe(value)
+          }
+          if (key === 'name') spanNameRef.current.innerHTML = value
+          else if (key === 'iphone') spanIponeRef.current.innerHTML = value
+          else if (key === 'age') spanAgeRef.current.innerHTML = value
+        }
       }
-    }
-  })
-  const [inputName, setInputName] = React.useState(obj_proxy.name)
-  const [inputIphone, setInputIphone] = React.useState(obj_proxy.info.iphone)
-  const [inputAge, setInputAge] = React.useState(obj_proxy.info.age)
+    })
+  }
+  const proxy_obj = observe(obj)
+  const [inputName, setInputName] = React.useState(proxy_obj.name)
+  const [inputIphone, setInputIphone] = React.useState(proxy_obj.info.iphone)
+  const [inputAge, setInputAge] = React.useState(obj.info.age)
   const inputChange = (v, k) => {
     if (k === 'name') {
       setInputName(v)
-      obj_proxy.name = v
+      proxy_obj.name = v
     } else if (k === 'iphone') {
       setInputIphone(v)
-      obj_proxy.info.iphone = v
+      proxy_obj.info.iphone = v
     } else if (k === 'age') {
       setInputAge(v)
-      obj_proxy.info.age = v
+      proxy_obj.info.age = v
     }
   }
   const spanNameRef = React.useRef(null)
@@ -50,7 +64,7 @@ export const ProxyComp = () => {
   return (
     <div className="flex flex-col">
       <span className="w-full rounded bg-blue-500 p-2" ref={spanNameRef}>
-        {obj_proxy.name}
+        {proxy_obj.name}
       </span>
       <input
         className="flex-1 rounded border bg-blue-500 p-2"
@@ -59,7 +73,7 @@ export const ProxyComp = () => {
         onChange={(e) => inputChange(e.target.value, 'name')}
       />
       <span className="w-full rounded bg-blue-500 p-2" ref={spanIponeRef}>
-        {obj_proxy.info.iphone}
+        {proxy_obj.info.iphone}
       </span>
       <input
         className="flex-1 rounded border bg-blue-500 p-2"
@@ -68,7 +82,7 @@ export const ProxyComp = () => {
         onChange={(e) => inputChange(e.target.value, 'iphone')}
       />
       <span className="w-full rounded bg-blue-500 p-2" ref={spanAgeRef}>
-        {obj_proxy.info.age}
+        {proxy_obj.info.age}
       </span>
       <input
         className="flex-1 rounded border bg-blue-500 p-2"
