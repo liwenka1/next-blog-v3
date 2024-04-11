@@ -18,12 +18,13 @@ export const ProxyComp = () => {
       age: 18
     }
   }
+  const isObject = (target) => typeof target === 'object' && target !== null
   const observe = (obj) => {
-    if (!obj || typeof obj !== 'object') return
+    if (!isObject(obj)) return
     return new Proxy(obj, {
       get(target, key) {
         const value = target[key]
-        if (typeof value === 'object' && value !== null) {
+        if (isObject(value)) {
           return observe(value)
         }
         return value
@@ -32,7 +33,7 @@ export const ProxyComp = () => {
         const oldValue = target[key]
         if (oldValue !== value) {
           Reflect.set(target, key, value)
-          if (typeof value === 'object' && value !== null) {
+          if (isObject(value)) {
             observe(value)
           }
           if (key === 'name') spanNameRef.current.innerHTML = value
@@ -95,3 +96,139 @@ export const ProxyComp = () => {
 }
 
 <ProxyComp />
+
+## vue
+
+export const VueComp = () => {
+  const isObject = (target) => typeof target === 'object' && target !== null
+  const reactive = (target) => {
+    return new Proxy(target, {
+      get(target, key, receiver) {
+        // Reflect 对象取值
+        let res = Reflect.get(target, key, receiver)
+        // 依赖收集
+        track(target, key)
+        // 递归
+        if (isObject(res)) {
+          return reactive(res)
+        }
+        return res
+      },
+      set(target, key, value, receiver) {
+        // Reflect 对象赋值 返回 Boolean
+        let res = Reflect.set(target, key, value, receiver)
+        // 依赖更新
+        trigger(target, key)
+        return res
+      }
+    })
+  }
+  const effectStack = []
+  const effect = (fn) => {
+    const e = createReactiveEffect(fn)
+    // 立即执行
+    e()
+    return e
+  }
+  const createReactiveEffect = (fn) => {
+    const effect = () => {
+      try {
+        effectStack.push(effect)
+        compile()
+        return fn()
+      } finally {
+        effectStack.pop()
+      }
+    }
+    return effect
+  }
+  const targetMap = new WeakMap()
+  // 依赖收集
+  const track = (target, key) => {
+    const effect = effectStack[effectStack.length - 1]
+    if (effect) {
+      let fistDeepMap = targetMap.get(target)
+      if (!fistDeepMap) {
+        fistDeepMap = new Map()
+        targetMap.set(target, fistDeepMap)
+      }
+      let secondDeepMap = fistDeepMap.get(key)
+      if (!secondDeepMap) {
+        secondDeepMap = new Set()
+        fistDeepMap.set(key, secondDeepMap)
+      }
+      secondDeepMap.add(effect)
+    }
+  }
+  // 依赖更新
+  const trigger = (target, key) => {
+    const fistDeepMap = targetMap.get(target)
+    if (!fistDeepMap) return
+    const secondDeepMap = fistDeepMap.get(key)
+    if (secondDeepMap) secondDeepMap.forEach((effect) => effect())
+  }
+  // 模板解析
+  const compile = () => {
+    const element = document.querySelector('#app')
+    const fragment = document.createDocumentFragment()
+    let child
+    while ((child = element.firstChild)) {
+      fragment.append(child)
+    }
+    // 替换文档碎片内容
+    const fragment_compile = (node) => {
+      const xxx = node.nodeValue
+      const pattern = /\(\(\s*(\S+)\s*\)\)/
+      console.log(node, obj, node.nodeType, 'node')
+      if (node.nodeType === 3) {
+        const result_regex = pattern.exec(node.nodeValue)
+        if (result_regex) {
+          const arr = result_regex[1].split('.')
+          const value = arr.reduce((total, current) => total[current], obj)
+          node.nodeValue = xxx.replace(pattern, value)
+        }
+        return
+      }
+      if (node.nodeType === 1 && node.nodeName === 'INPUT') {
+        const attr = Array.from(node.attributes)
+        attr.forEach((i) => {
+          if (i.nodeName === 'v-model') {
+            const value = i.nodeValue.split('.').reduce((total, current) => total[current], obj)
+            node.value = value
+            // 添加监听
+            node.addEventListener('input', (e) => {
+              const arr1 = i.nodeValue.split('.')
+              const arr2 = arr1.slice(0, arr1.length - 1)
+              const final = arr2.reduce((total, current) => total[current], obj)
+              final[arr1[arr1.length - 1]] = e.target.value
+            })
+          }
+        })
+      }
+      node.childNodes.forEach((child) => fragment_compile(child))
+    }
+    fragment_compile(fragment)
+    element.appendChild(fragment)
+    console.log(element, fragment, element.firstChild)
+  }
+  const obj = reactive({
+    name: 'liwenkai',
+    info: {
+      iphone: 12138,
+      age: 18
+    }
+  })
+  React.useEffect(() => {
+    effect(() => {
+      console.log('effect', obj.name, obj.info.iphone)
+    })
+  })
+  return (
+    <div id="app" className="flex flex-col">
+      <span className="w-full rounded bg-blue-500 p-2">名字：((name))</span>
+      <input className="flex-1 rounded border bg-blue-500 p-2" placeholder="输入名字" v-model="name" />
+    </div>
+  )
+}
+
+<VueComp />
