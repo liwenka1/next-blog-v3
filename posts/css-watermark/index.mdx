@@ -1,0 +1,17 @@
+---
+title: Watermark 水印组件
+date: 2024-04-12
+description: Watermark 水印组件的简单实现
+---
+
+## CSS
+
+export const CSSComp = () => {
+  return (
+    <div className="relative h-64 w-full overflow-hidden">
+      <div className="absolute -left-20 -top-52 h-[800px] w-[800px] rotate-45 bg-[url('/baidu.png')] bg-repeat"></div>
+    </div>
+  )
+}
+
+<CSSComp />
