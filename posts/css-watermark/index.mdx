@@ -4,14 +4,64 @@ date: 2024-04-12
 description: Watermark 水印组件的简单实现
 ---
 
-## CSS
+## 前言
 
-export const CSSComp = () => {
+## Watermark 组件
+
+export const Watermark = ({ text = '这里是水印' }) => {
+  const _text = text
+  const createWaterDom = (element) => {
+    let dom = document.createElement('div')
+  }
+  // 动态生成 className
+  const nameGenerator = () => {
+    let className = ''
+    const length = 2 + Math.ceil(Math.random() * 7)
+    const dict = [
+      'a',
+      'b',
+      'c',
+      'd',
+      'e',
+      'f',
+      'g',
+      'h',
+      'i',
+      'g',
+      'k',
+      'l',
+      'm',
+      'n',
+      'o',
+      'p',
+      'q',
+      'r',
+      's',
+      't',
+      'u',
+      'v',
+      'w',
+      'x',
+      'y',
+      'z'
+    ]
+    for (let i = 0; i < length; i++) {
+      className += dict[Math.ceil(Math.random() * 26 - 1)] || 'a'
+    }
+    return className
+  }
+  const elementAttributeName = nameGenerator()
+  React.useEffect(() => {
+    createWaterDom(document.querySelector('#App'))
+  }, [])
+}
+
+export const WatermarkComp = () => {
   return (
-    <div className="relative h-64 w-full overflow-hidden">
-      <div className="absolute -left-20 -top-52 h-[800px] w-[800px] rotate-45 bg-[url('/css-watermark/baidu.png')] bg-repeat"></div>
+    <div className="App" id="App">
+      <Watermark text="这里是一个水印这里是一个水印这里是一个水印" mountElement="App" />
     </div>
   )
 }
 
-<CSSComp />
+<WatermarkComp />
