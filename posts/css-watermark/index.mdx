@@ -8,11 +8,8 @@ description: Watermark 水印组件的简单实现
 
 ## Watermark 组件
 
-export const Watermark = ({ text = '这里是水印' }) => {
+export const Watermark = ({ text = '这里是水印', color }) => {
   const _text = text
-  const createWaterDom = (element) => {
-    let dom = document.createElement('div')
-  }
   // 动态生成 className
   const nameGenerator = () => {
     let className = ''
@@ -51,6 +48,58 @@ export const Watermark = ({ text = '这里是水印' }) => {
     return className
   }
   const elementAttributeName = nameGenerator()
+  const handleAddWaterMark = (str, element) => {
+    const rotate = -25
+    const fontWeight = 'normal'
+    const fontSize = '14px'
+    const fontFamily = 'SimHei'
+    const fontColor = color
+    const rect = {
+      width: 370,
+      height: 300,
+      left: 10,
+      top: 150
+    }
+    const can = document.createElement('canvas')
+    can.className = 'mark-canvas'
+    const watermarkDiv = element
+    watermarkDiv.appendChild(can)
+    can.width = rect.width
+    can.height = rect.height
+    can.style.display = 'none'
+    can.style.zIndex = '999'
+    const can2D = can.getContext('2d')
+    can2D.rotate((rotate * Math.PI) / 180)
+    can2D.font = `${fontWeight} ${fontSize} ${fontFamily}`
+    can2D.fillStyle = fontColor
+    can2D.textAlign = 'center'
+    can2D.textBaseline = 'middle'
+    can2D.fillText(str, rect.left, rect.top)
+    // 使用 canvas 生成图片
+    const styleStr = `z-index: 9;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background-repeat: repeat;
+    background-position: 0px 0px;
+    background-image: url(${can.toDataURL('image/png')});
+    visibility: visible !important;`
+    watermarkDiv.setAttribute('style', styleStr)
+    // 生成之后删除多余的 canvas 元素
+    const canvasDom = document.querySelector('.mark-canvas')
+    if (canvasDom) {
+      canvasDom.parentElement.removeChild(canvasDom)
+    }
+  }
+  const createWaterDom = (element) => {
+    let dom = document.createElement('div')
+    dom.className = elementAttributeName
+    element.appendChild(dom)
+    handleAddWaterMark(_text, document.querySelector(`.${elementAttributeName}`))
+  }
   React.useEffect(() => {
     createWaterDom(document.querySelector('#App'))
   }, [])
@@ -58,8 +107,8 @@ export const Watermark = ({ text = '这里是水印' }) => {
 
 export const WatermarkComp = () => {
   return (
-    <div className="App" id="App">
-      <Watermark text="这里是一个水印这里是一个水印这里是一个水印" mountElement="App" />
+    <div className="App relative h-[800px] w-full overflow-hidden" id="App">
+      <Watermark text="这里是一个水印这里是一个水印这里是一个水印" mountElement="App" color="#d23669" />
     </div>
   )
 }
