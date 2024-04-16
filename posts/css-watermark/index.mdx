@@ -8,7 +8,7 @@ description: Watermark 水印组件的简单实现
 
 ## Watermark 组件
 
-export const Watermark = ({ text = '这里是水印', color }) => {
+export const Watermark = ({ text = '', mountElement = '', color }) => {
   const _text = text
   // 动态生成 className
   const nameGenerator = () => {
@@ -48,6 +48,7 @@ export const Watermark = ({ text = '这里是水印', color }) => {
     return className
   }
   const elementAttributeName = nameGenerator()
+	// 生成水印的样式
   const handleAddWaterMark = (str, element) => {
     const rotate = -25
     const fontWeight = 'normal'
@@ -77,16 +78,16 @@ export const Watermark = ({ text = '这里是水印', color }) => {
     can2D.fillText(str, rect.left, rect.top)
     // 使用 canvas 生成图片
     const styleStr = `z-index: 9;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    background-repeat: repeat;
-    background-position: 0px 0px;
-    background-image: url(${can.toDataURL('image/png')});
-    visibility: visible !important;`
+                      position: absolute;
+                      left: 0;
+                      top: 0;
+                      width: 100%;
+                      height: 100%;
+                      pointer-events: none;
+                      background-repeat: repeat;
+                      background-position: 0px 0px;
+                      background-image: url(${can.toDataURL('image/png')});
+                      visibility: visible !important;`
     watermarkDiv.setAttribute('style', styleStr)
     // 生成之后删除多余的 canvas 元素
     const canvasDom = document.querySelector('.mark-canvas')
@@ -94,15 +95,54 @@ export const Watermark = ({ text = '这里是水印', color }) => {
       canvasDom.parentElement.removeChild(canvasDom)
     }
   }
-  const createWaterDom = (element) => {
+  // 监听删除水印
+  const containObserver = () => {
+    const bodyObserver = new MutationObserver((mutationList) => {
+      mutationList.forEach((mutation) => {
+        if (mutation.removedNodes.length > 0) {
+          mutation.removedNodes.forEach((_target) => {
+            if (_target.className === elementAttributeName) {
+              createWaterDom(document.querySelector(`#${mountElement}`))
+            }
+          })
+        }
+      })
+    })
+    bodyObserver.observe(document.querySelector(`#${mountElement}`), {
+      childList: true
+    })
+    return bodyObserver
+  }
+  // 生成水印
+  const createWaterDom = (element, containMutationObserver) => {
     let dom = document.createElement('div')
     dom.className = elementAttributeName
     element.appendChild(dom)
     handleAddWaterMark(_text, document.querySelector(`.${elementAttributeName}`))
+    // 监听随机生成的类名
+    if (containMutationObserver) {
+      let classNameObserver = new MutationObserver((mutationList) => {
+        mutationList.forEach((mutation) => {
+          if (mutation.type === 'attributes' && containMutationObserver !== null) {
+            containMutationObserver.disconnect()
+            dom.parentElement && dom.parentElement.removeChild(dom)
+            createWaterDom(document.querySelector(`#${mountElement}`))
+            containMutationObserver.observe(document.querySelector(`#${mountElement}`), {
+              childList: true
+            })
+          }
+        })
+      })
+      classNameObserver.observe(dom, {
+        attributes: true,
+        childList: true
+      })
+    }
   }
   React.useEffect(() => {
-    createWaterDom(document.querySelector('#App'))
-  }, [])
+    const containMutationObserver = containObserver()
+    createWaterDom(document.querySelector(`#${mountElement}`), containMutationObserver)
+  }, [mountElement])
 }
 
 export const WatermarkComp = () => {
